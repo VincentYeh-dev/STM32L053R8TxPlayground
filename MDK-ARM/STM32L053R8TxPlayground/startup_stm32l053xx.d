@@ -1,1 +1,0 @@
-stm32l053r8txplayground\startup_stm32l053xx.o: startup_stm32l053xx.s
