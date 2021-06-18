@@ -37,6 +37,7 @@ void shutdown(_Bool enable);
 void displayTest(_Bool enable);
 void setDecodeMode(uint8_t decode);
 void setIntensity(uint8_t intensity);
+void setScanLimit(uint8_t limit);
 void setDigit(uint8_t index,uint8_t digit,uint8_t data);
 
 void pullCSDown(void);

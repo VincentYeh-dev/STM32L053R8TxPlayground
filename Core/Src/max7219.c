@@ -24,8 +24,6 @@ void setCLKPin(GPIO_TypeDef *port,uint16_t pin){
 	pin_clk=pin;
 }
 
-
-
 void MAX7219_Init(void)
 {	
 	HAL_GPIO_WritePin(port_din,pin_din,GPIO_PIN_RESET);
@@ -35,21 +33,20 @@ void MAX7219_Init(void)
 	
 	displayTest(1);
 	HAL_Delay(200);
-	
 	displayTest(0);
+	
   shutdown(1);
+	
 	setDecodeMode(0);
 	clear();
 	setIntensity(0x00);
+	setScanLimit(0x07);
 	shutdown(0);
-	set_all_register(0x03ff);
 	
-	while(1);
 }
 
 void set_all_register(uint16_t data){
 	pullCSDown();
-	HAL_GPIO_WritePin(port_cs,pin_cs,GPIO_PIN_RESET);
 	char i=0;
 	for(i=0;i<MAX7219_NUMBER;i++){
 		shiftOut(data);
@@ -69,12 +66,11 @@ void set_single_register(uint8_t index,uint16_t data){
 	
 	pullCSUp();
 }
+
 void clear(void){
 	uint8_t i=0;
 	for(;i<8;i++){
-		pullCSDown();
-		shiftOut(MAX7219_ADRR_DIGIT(i));
-		pullCSUp();
+		set_all_register(MAX7219_ADRR_DIGIT(i));
 	}
 }
 
@@ -91,8 +87,10 @@ void shiftOut(uint16_t data){
 		}
 		
 		HAL_GPIO_WritePin(port_clk,pin_clk,GPIO_PIN_SET);
+		
 		HAL_GPIO_WritePin(port_clk,pin_clk,GPIO_PIN_RESET);
-		data<<=1;
+		
+		data=((data<<1)&0xffff);
 	}
 		HAL_GPIO_WritePin(port_din,pin_din,GPIO_PIN_RESET);
 }
@@ -115,6 +113,10 @@ void setDecodeMode(uint8_t decode){
 
 void setIntensity(uint8_t intensity){
 	set_all_register(MAX7219_ADRR_INTENSITY|intensity);
+}
+
+void setScanLimit(uint8_t limit){
+	set_all_register(MAX7219_ADRR_SCAN_LIMIT|limit);
 }
 
 void pullCSDown(void){
